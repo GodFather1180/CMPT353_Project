@@ -6,11 +6,11 @@ __pycache__/
 .vscode/
 .idea/
 
-# Raw Hammer scrape data and any StatCan downloads — large, not ours to
+# Raw Hammer scrape data and any StatCan downloads. Large, not ours to
 # redistribute, and reproducible from the sources listed in README.md.
 data/*
 !data/.gitkeep
 
-# Generated analysis outputs — regenerate via README.md, don't commit.
+# Generated analysis outputs. Regenerate via README.md, don't commit.
 results/*
 !results/.gitkeep
