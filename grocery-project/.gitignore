@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# Raw Hammer scrape data and any StatCan downloads — large, not ours to
+# redistribute, and reproducible from the sources listed in README.md.
+data/*
+!data/.gitkeep
+
+# Generated analysis outputs — regenerate via README.md, don't commit.
+results/*
+!results/.gitkeep
