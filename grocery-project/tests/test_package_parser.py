@@ -5,10 +5,8 @@ import pytest
 
 from package_parser import parse_package_sizes
 
-# Each case is (input text, expected quantity, expected unit, expected pack count).
-# expected values are None where we want the row to come back unparsed (NaN
-# in every column). Quantity is always the total amount for the price, so a
-# multipack like "10x88ml" should come out as 880.0 grams of stuff, not 88.
+# each case: (input, expected quantity, unit, pack_count). None means
+# the row should come back unparsed.
 
 CLEAN_METRIC = [
     ("500g", 500.0, "g", 1),
@@ -31,6 +29,19 @@ MULTIPACK = [
     ("2 x 500g", 1000.0, "g", 2),
 ]
 
+# reversed order, quantity+unit then x then count, real values from the
+# data (1,517 rows match this shape)
+
+REVERSED_MULTIPACK = [
+    ("250mlx6", 1500.0, "ml", 6),
+    ("60gx6", 360.0, "g", 6),
+    ("185gx4", 740.0, "g", 4),
+    ("30gx12", 360.0, "g", 12),
+    ("355mlx12", 4260.0, "ml", 12),
+    ("187.5gx4", 750.0, "g", 4),
+    ("60g x 6", 360.0, "g", 6),  # spaced version
+]
+
 IMPERIAL = [
     ("0.6 ounce", pytest.approx(17.01, abs=0.01), "g", 1),
 ]
@@ -40,9 +51,7 @@ EMBEDDED_IN_PRODUCT_NAME = [
     ("Cheese 450g", 450.0, "g", 1),
 ]
 
-# These are real values pulled straight from product.csv's `units` column,
-# not made up. "foil wrapped4 each" and the two "$.../1kg $.../1lb" strings
-# showed up when we sampled the data earlier.
+# values pulled from product.csv's `units` column, not made up
 REAL_MESSY_VALUES = [
     ("foil wrapped4 each", 4.0, "each", 4),
     ("$46.28/1kg $21.00/1lb", None, None, None),
@@ -54,6 +63,7 @@ ALL_CASES = (
     CLEAN_METRIC
     + COUNT_BASED
     + MULTIPACK
+    + REVERSED_MULTIPACK
     + IMPERIAL
     + EMBEDDED_IN_PRODUCT_NAME
     + REAL_MESSY_VALUES
@@ -92,8 +102,5 @@ def test_result_keeps_input_index():
 
 
 def test_operates_on_whole_series_at_once():
-    # a stand-in for the "no explicit loops" course rule: this just checks
-    # the function accepts a multi-row Series and returns one row per input,
-    # not that it's fast, but a real per-row loop would still pass this
     result = parse_package_sizes(pd.Series(["500g", "1.5l", "not a size"]))
     assert len(result) == 3

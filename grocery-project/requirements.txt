@@ -2,3 +2,6 @@ pandas
 numpy
 pytest
 pyarrow
+matplotlib
+scikit-learn
+scipy
